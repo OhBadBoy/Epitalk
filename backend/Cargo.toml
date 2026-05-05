@@ -20,7 +20,7 @@ tokio-stream = "0.1"
 url = "2"
 
 # Concurrent data structures
-dashmap = "5"
+dashmap = "6"
 
 # MongoDB
 mongodb = "2.8"
