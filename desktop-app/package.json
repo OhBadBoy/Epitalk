@@ -8,7 +8,7 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "electron": "^32.3.3"
+    "electron": "^39.8.5"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.0.18",
