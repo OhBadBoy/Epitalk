@@ -39,7 +39,7 @@ argon2 = "0.5"
 # Utilities
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-thiserror = "1"
+thiserror = "2"
 anyhow = "1"
 validator = { version = "0.18", features = ["derive"] }
 
