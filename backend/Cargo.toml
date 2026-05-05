@@ -1,0 +1,57 @@
+[package]
+name = "epitalk-backend"
+version = "0.1.0"
+edition = "2021"
+authors = ["James <james@epitech.eu>"]
+description = "EpiTalk Backend - Full REST API for authentication, RBAC, servers, channels, members & invites"
+default-run = "epitalk-backend"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["macros", "ws", "multipart"] }
+tokio = { version = "1", features = ["full"] }
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
+
+# WebSocket
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+tokio-stream = "0.1"
+url = "2"
+
+# Concurrent data structures
+dashmap = "5"
+
+# MongoDB
+mongodb = "2.8"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "chrono"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Authentication
+jsonwebtoken = "9"
+argon2 = "0.5"
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1"
+anyhow = "1"
+validator = { version = "0.18", features = ["derive"] }
+
+# Logging & Tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Environment
+dotenvy = "0.15"
+ 
+# HTTP client for upstream GIF APIs
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

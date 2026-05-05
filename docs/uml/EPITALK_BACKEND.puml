@@ -1,0 +1,119 @@
+@startuml EPITALK_BACKEND
+title EpiTalk — BACKEND (Rust + Axum) — Component UML\n(Gray = Not Yet Implemented)
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+package "backend/ (Rust + Axum)" {
+
+  package "App (src/main.rs)" {
+    component "Router (Axum)" as Router
+    component "AppState" as AppState
+    component "Layers\n(CORS/Trace)" as Layers
+  }
+
+  package "Auth (src/auth/)" {
+    component "JWT Manager" as JwtManager
+    component "Password (Argon2)" as PasswordManager
+    component "RequireAuth\nMiddleware" as AuthMiddleware
+  }
+
+  package "REST Routes (src/routes/)" {
+    component "health.rs" as HealthRoutes
+    component "auth.rs" as AuthRoutes
+    component "servers.rs" as ServerRoutes
+    component "channels.rs" as ChannelRoutes
+    component "members.rs" as MemberRoutes
+    component "invites.rs" as InviteRoutes
+  }
+
+  package "WS (src/ws/) [PLANNED]" #LightGray {
+    component "ws_upgrade\n(/ws)" as WsUpgrade #LightGray
+    component "protocol\n(typed events)" as WsProtocol #LightGray
+    component "hub\n(rooms/presence/typing)" as WsHub #LightGray
+  }
+
+  package "Models (src/models/)" {
+    component "User" as UserModel
+    component "Server" as ServerModel
+    component "Channel" as ChannelModel
+    component "Membership" as MembershipModel
+    component "Invite" as InviteModel
+    component "MemberRole\n(RBAC)" as RoleModel
+  }
+
+  package "Repositories (src/repositories/)" {
+    component "UserRepository" as UserRepo
+    component "ServerRepository" as ServerRepo
+    component "ChannelRepository" as ChannelRepo
+    component "MembershipRepository" as MembershipRepo
+    component "InviteRepository" as InviteRepo
+  }
+
+  package "Repos/mongo [PLANNED]" #LightGray {
+    component "MessageRepo (Mongo)" as MongoMessageRepo #LightGray
+  }
+
+  package "Infra" {
+    component "Config (env)" as Config
+    component "Error (AppError)" as Error
+  }
+}
+
+cloud "Frontend (NextJS)" as FE
+database "PostgreSQL" as PG
+database "MongoDB [PLANNED]" as MG #LightGray
+
+' Entry points
+FE --> Router : REST JSON
+FE ..> WsUpgrade : WebSocket [PLANNED]
+
+' App wiring
+Router --> Layers
+Layers --> AuthMiddleware
+
+Router --> HealthRoutes
+Router --> AuthRoutes
+Router --> ServerRoutes
+Router --> ChannelRoutes
+Router --> MemberRoutes
+Router --> InviteRoutes
+
+' Routes -> Repos
+AuthRoutes --> UserRepo
+AuthRoutes --> JwtManager
+AuthRoutes --> PasswordManager
+
+ServerRoutes --> ServerRepo
+ServerRoutes --> MembershipRepo
+
+ChannelRoutes --> ChannelRepo
+ChannelRoutes --> MembershipRepo
+
+MemberRoutes --> MembershipRepo
+MemberRoutes --> UserRepo
+
+InviteRoutes --> InviteRepo
+InviteRoutes --> MembershipRepo
+
+' RBAC
+MembershipRepo --> RoleModel : role checks
+
+' DB
+UserRepo --> PG
+ServerRepo --> PG
+MembershipRepo --> PG
+InviteRepo --> PG
+ChannelRepo --> PG
+
+MongoMessageRepo ..> MG
+
+' WS wiring [PLANNED]
+WsUpgrade ..> WsProtocol
+WsUpgrade ..> WsHub
+WsHub ..> MembershipRepo : validate membership
+
+' Cross-cutting infra
+Router ..> Config
+AuthRoutes ..> Error
+@enduml

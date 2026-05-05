@@ -1,0 +1,186 @@
+@startuml EPITALK_FRONTEND
+title EpiTalk — FRONTEND (NextJS 15 + App Router) — Component UML
+' =====================================================================
+' LÉGENDE: Les composants en gris sont PLANIFIÉS mais pas encore implémentés
+' =====================================================================
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+' Couleur pour les éléments planifiés (non implémentés)
+skinparam component {
+  BackgroundColor<<planned>> LightGray
+  BorderColor<<planned>> Gray
+}
+
+package "frontend/real-time-chat/ (NextJS App Router)" {
+
+  package "Layouts (app/)" {
+    component "RootLayout\napp/layout.tsx" as RootLayout
+    component "AuthLayout\napp/(auth)/layout.tsx" as AuthLayout
+    component "AppLayout\napp/(app)/layout.tsx" as AppLayout
+  }
+
+  package "Pages (app/)" {
+    component "HomePage\napp/page.tsx" as HomePage
+    component "LoginPage\napp/(auth)/login" as LoginPage
+    component "RegisterPage\napp/(auth)/register" as RegisterPage
+    component "ServersPage\napp/(app)/servers/page.tsx" as ServersPage
+    component "InvitePage\napp/invite/[code]" as InvitePage
+    note right of InvitePage : Gérer les liens d'invitation
+    component "[PLANNED] ChannelPage\napp/(app)/servers/[id]/channels/[channelId]" as ChannelPage <<planned>>
+  }
+
+  package "Server Components (app/(app)/servers/components/)" {
+    component "ServersBar\nservers-bar.tsx" as ServersBar
+    component "ServersRail\nservers-rail.tsx" as ServersRail
+    component "ServersLoader\nservers-loader.tsx" as ServersLoader
+    component "ChannelsSidebar\nchannels-sidebar.tsx" as ChannelsSidebar
+    component "MembersPanel\nmembers-panel.tsx" as MembersPanel
+    component "ChatPanel\nchat-panel.tsx" as ChatPanel
+    note right of ChatPanel : Interface de chat (UI ready)
+  }
+
+  package "Forms (components/forms/)" {
+    component "LoginForm" as LoginForm
+    component "RegisterForm" as RegisterForm
+  }
+
+  package "UI Components (components/ui/)" {
+    component "Button" as Button
+    component "Card" as Card
+    component "Input" as Input
+    component "Field" as Field
+    component "Label" as Label
+    component "Separator" as Separator
+    component "AnimatedGroup" as AnimatedGroup
+    component "TextEffect" as TextEffect
+  }
+
+  package "Landing Components (components/)" {
+    component "Header" as Header
+    component "HeroSection" as HeroSection
+    component "LogoCloud" as LogoCloud
+    component "Logo" as Logo
+  }
+
+  package "REST Client (lib/api/)" {
+    component "FetchClient\nfetchClient.ts" as FetchClient
+    component "AuthApi\nauth.api.ts" as AuthApi
+    component "ServersApi\nservers.api.ts" as ServersApi
+    component "ChannelsApi\nchannels.api.ts" as ChannelsApi
+    component "MessagesApi\nmessages.api.ts" as MessagesApi
+    component "ApiErrors\nerrors.ts" as ApiErrors
+  }
+
+  package "Zod Schemas (lib/api/schemas/)" {
+    component "AuthSchema\nauth.schema.ts" as AuthSchema
+    component "ServersSchema\nservers.schema.ts" as ServersSchema
+    component "ChannelsSchema\nchannels.schema.ts" as ChannelsSchema
+    component "MessagesSchema\nmessages.schema.ts" as MessagesSchema
+    note bottom of MessagesSchema : Pour futur MongoDB
+  }
+
+  package "[PLANNED] WebSocket Client (lib/ws/)" <<planned>> {
+    component "[PLANNED] WSClient" as WSClient <<planned>>
+    component "[PLANNED] EventRouter" as EventRouter <<planned>>
+    component "[PLANNED] Reconnect/Backoff" as Reconnect <<planned>>
+  }
+
+  package "State Management (store/)" {
+    component "AuthStore\nauth.store.ts" as AuthStore
+    component "ServerStore\nserver.store.ts" as ServerStore
+    component "ChannelStore\nchannel.store.ts" as ChannelStore
+    component "MemberStore\nmember.store.ts" as MemberStore
+    component "[PLANNED] ChatStore" as ChatStore <<planned>>
+    component "[PLANNED] PresenceStore" as PresenceStore <<planned>>
+    component "[PLANNED] TypingStore" as TypingStore <<planned>>
+  }
+
+  package "Utils (lib/)" {
+    component "utils.ts\n(cn, classnames)" as Utils
+    component "me.ts\n(user info helper)" as MeHelper
+  }
+}
+
+cloud "Backend HTTP\n(REST API :3001)" as BE_HTTP
+cloud "[PLANNED] Backend WS\n(/ws)" as BE_WS <<planned>>
+
+' ===================== RELATIONS =====================
+
+' Layouts hierarchy
+RootLayout --> AuthLayout
+RootLayout --> AppLayout
+
+' Landing page
+HomePage --> Header
+HomePage --> HeroSection
+HomePage --> LogoCloud
+Header --> Logo
+
+' Auth flow
+AuthLayout --> LoginPage
+AuthLayout --> RegisterPage
+LoginPage --> LoginForm
+RegisterPage --> RegisterForm
+LoginForm --> AuthApi
+RegisterForm --> AuthApi
+LoginForm ..> Button
+LoginForm ..> Input
+LoginForm ..> Field
+RegisterForm ..> Button
+RegisterForm ..> Input
+RegisterForm ..> Field
+
+' App shell composition
+AppLayout --> ServersPage
+ServersPage --> ServersBar
+ServersPage --> ServersRail
+ServersPage --> ServersLoader
+ServersPage --> ChannelsSidebar
+ServersPage --> MembersPanel
+ServersPage --> ChatPanel
+
+' Server components data flow
+ServersBar --> ServersApi
+ServersRail --> ServersApi
+ChannelsSidebar --> ChannelsApi
+MembersPanel --> ServersApi
+ChatPanel --> MessagesApi
+
+' REST flow
+AuthApi --> FetchClient
+ServersApi --> FetchClient
+ChannelsApi --> FetchClient
+MessagesApi --> FetchClient
+FetchClient --> ApiErrors
+FetchClient --> BE_HTTP : "HTTP JSON\n(fetch)"
+
+' Schema validation
+AuthApi --> AuthSchema
+ServersApi --> ServersSchema
+ChannelsApi --> ChannelsSchema
+MessagesApi --> MessagesSchema
+
+' State updates from API
+AuthApi ..> AuthStore : "setUser, setToken"
+ServersApi ..> ServerStore : "setServers, addServer"
+ChannelsApi ..> ChannelStore : "setChannels"
+ServersApi ..> MemberStore : "setMembers"
+
+' [PLANNED] WS flow (not implemented yet)
+WSClient ..> Reconnect : "[PLANNED]"
+WSClient ..> BE_WS : "[PLANNED]\nWebSocket events"
+EventRouter <.. WSClient : "[PLANNED]"
+EventRouter ..> ChatStore : "[PLANNED]\nmessage.created/deleted"
+EventRouter ..> PresenceStore : "[PLANNED]\npresence.updated"
+EventRouter ..> TypingStore : "[PLANNED]\ntyping.started/stopped"
+
+' UI components usage
+Card ..> ServersBar
+Button ..> MembersPanel
+Separator ..> ChannelsSidebar
+AnimatedGroup ..> HeroSection
+TextEffect ..> HeroSection
+
+@enduml

@@ -1,0 +1,14 @@
+{
+  "workspace": "C:\\Users\\James Pamara\\AppData\\Local\\Temp\\codex-presentations\\epitalk-stack",
+  "pptx": "C:\\Users\\James Pamara\\AppData\\Local\\Temp\\codex-presentations\\epitalk-stack\\output\\output.pptx",
+  "checks": {
+    "output_hygiene": {
+      "output_dir": "C:\\Users\\James Pamara\\AppData\\Local\\Temp\\codex-presentations\\epitalk-stack\\output",
+      "unexpected_files": []
+    }
+  },
+  "failures": [
+    "PPTX package inspection failed: unzip -Z1 C:\\Users\\James Pamara\\AppData\\Local\\Temp\\codex-presentations\\epitalk-stack\\output\\output.pptx failed"
+  ],
+  "warnings": []
+}

@@ -1,0 +1,87 @@
+@startuml EPITALK_DB
+title EpiTalk — DB (PostgreSQL + MongoDB) — UML (ER + Collections)\n(Gray = Not Yet Implemented)
+hide circle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+package "PostgreSQL (organisation / RBAC)" {
+
+  class users <<table>> {
+    +id: UUID (PK)
+    email: CITEXT (UNIQUE)
+    password_hash: TEXT
+    username: TEXT
+    created_at: TIMESTAMPTZ
+    updated_at: TIMESTAMPTZ
+  }
+
+  class servers <<table>> {
+    +id: UUID (PK)
+    name: TEXT
+    description: TEXT?
+    owner_id: UUID (FK -> users.id)
+    created_at: TIMESTAMPTZ
+    updated_at: TIMESTAMPTZ
+  }
+
+  class memberships <<table>> {
+    +server_id: UUID (PK, FK -> servers.id)
+    +user_id: UUID (PK, FK -> users.id)
+    role: ENUM('OWNER','ADMIN','MODERATOR','MEMBER')
+    joined_at: TIMESTAMPTZ
+  }
+
+  class channels <<table>> {
+    +id: UUID (PK)
+    server_id: UUID (FK -> servers.id)
+    name: TEXT
+    description: TEXT?
+    kind: ENUM('TEXT')
+    position: INTEGER
+    created_at: TIMESTAMPTZ
+    updated_at: TIMESTAMPTZ
+  }
+
+  class invites <<table>> {
+    +code: TEXT (PK)
+    server_id: UUID (FK -> servers.id)
+    created_by: UUID (FK -> users.id)
+    expires_at: TIMESTAMPTZ?
+    max_uses: INT?
+    uses: INT
+    created_at: TIMESTAMPTZ
+  }
+
+  users "1" -- "many" servers : owns >
+  servers "1" -- "many" channels
+  users "1" -- "many" memberships
+  servers "1" -- "many" memberships
+  servers "1" -- "many" invites
+  users "1" -- "many" invites : creates >
+}
+
+package "MongoDB (messages / history) [PLANNED]" #LightGray {
+
+  class messages <<collection>> #LightGray {
+    +_id: ObjectId (PK)
+    channel_id: UUID (string)
+    server_id: UUID (string)
+    author_id: UUID (string)
+    content: string
+    created_at: datetime
+    deleted_at: datetime?
+  }
+
+  note right of messages
+    Indexes (recommended):
+      - { channel_id: 1, created_at: -1 }
+      - { server_id: 1, created_at: -1 } (optional)
+      - { author_id: 1, created_at: -1 } (optional)
+  end note
+}
+
+' Logical references across DBs (not enforced)
+channels ..> messages : channel_id [PLANNED]
+users ..> messages : author_id [PLANNED]
+servers ..> messages : server_id [PLANNED]
+@enduml

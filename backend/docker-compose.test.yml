@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: epitalk
+      POSTGRES_PASSWORD: Epitalk94!
+      POSTGRES_DB: epitalk
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

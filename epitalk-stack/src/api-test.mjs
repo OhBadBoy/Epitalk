@@ -1,0 +1,12 @@
+﻿import { Presentation, PresentationFile, column, text, fill, hug } from '@oai/artifact-tool';
+const p = Presentation.create({ slideSize: { width: 1920, height: 1080 } });
+const s = p.slides.add();
+s.background.fill = '#0B1020';
+s.compose(column({ width: fill, height: fill, padding: 80, gap: 20 }, [text('Hello', { style: { fontSize: 80, color: '#fff', bold: true }, width: fill, height: hug })]), { frame: { left: 0, top: 0, width: 1920, height: 1080 }, baseUnit: 8 });
+s.speakerNotes.setText('Notes hello');
+const blob = await PresentationFile.exportPptx(p);
+console.log('blob', blob.constructor.name, Object.getOwnPropertyNames(Object.getPrototypeOf(blob)));
+await blob.save('output/test.pptx');
+const png = await s.export({ format: 'png' });
+console.log('png', png.constructor.name, Object.getOwnPropertyNames(Object.getPrototypeOf(png)));
+await png.save('scratch/test.png');

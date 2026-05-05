@@ -1,0 +1,42 @@
+name: WS integration tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ws-test:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: epitalk
+          POSTGRES_PASSWORD: Epitalk94!
+          POSTGRES_DB: epitalk
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Wait for DBs
+        run: |
+          echo "Waiting for services to be ready"
+          sleep 10
+      - name: Build
+        run: cargo build --locked --jobs 2
+      - name: Run WS test
+        env:
+          JWT_SECRET: super_secret_jwt_key_change_in_production_min_32_chars
+        run: |
+          cargo run --bin ws_test

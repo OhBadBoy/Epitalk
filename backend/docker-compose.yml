@@ -1,0 +1,90 @@
+services:
+  # =============================================================================
+  # Backend Application
+  # =============================================================================
+  backend:
+    build: .
+    image: epitalk-backend:latest
+    container_name: epitalk-backend
+    env_file: .env
+    environment:
+      # Override host-based URLs from .env to use docker network service names
+      DATABASE_URL: postgres://epitalk:Epitalk94!@postgres:5432/epitalk
+      MONGO_URL: mongodb://mongo:27017/epitalk_messages
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - epitalk-network
+    profiles:
+      - backend
+
+  # =============================================================================
+  # PostgreSQL Database (Users, Servers, Channels, Memberships)
+  # =============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: epitalk-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: epitalk
+      POSTGRES_PASSWORD: Epitalk94!
+      POSTGRES_DB: epitalk
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U epitalk -d epitalk"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - epitalk-network
+
+  # =============================================================================
+  # MongoDB (Messages, Real-time data)
+  # =============================================================================
+  mongo:
+    image: mongo:6.0
+    container_name: epitalk-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - epitalk-network
+
+  # =============================================================================
+  # Adminer (Database GUI - Development only)
+  # =============================================================================
+  adminer:
+    image: adminer:latest
+    container_name: epitalk-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:3001"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+    networks:
+      - epitalk-network
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+  mongo_data:
+
+networks:
+  epitalk-network:
+    driver: bridge

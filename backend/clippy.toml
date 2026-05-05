@@ -1,0 +1,41 @@
+# Clippy lint configuration
+# See: https://rust-lang.github.io/rust-clippy/
+
+[workspace.lints.clippy]
+# Deny - Will fail CI
+enum_glob_use = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+
+# Warn - Will show warnings
+clone_on_ref_ptr = "warn"
+dbg_macro = "warn"
+inefficient_to_string = "warn"
+macro_use_imports = "warn"
+manual_let_else = "warn"
+match_same_arms = "warn"
+missing_const_for_fn = "warn"
+needless_for_each = "warn"
+needless_pass_by_value = "warn"
+print_stderr = "warn"
+print_stdout = "warn"
+redundant_closure_for_method_calls = "warn"
+semicolon_if_nothing_returned = "warn"
+str_to_string = "warn"
+string_to_string = "warn"
+trivially_copy_pass_by_ref = "warn"
+unnested_or_patterns = "warn"
+unused_async = "warn"
+unused_self = "warn"
+use_self = "warn"
+
+# Pedantic (optional - can enable for stricter linting)
+# pedantic = "warn"
+
+[workspace.lints.rust]
+# Standard Rust lints
+unsafe_code = "forbid"
+missing_docs = "warn"

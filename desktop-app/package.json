@@ -1,0 +1,17 @@
+{
+  "name": "epitalk-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "electron": "^32.3.3"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "vitest": "^4.0.18"
+  }
+}

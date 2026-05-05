@@ -1,0 +1,28 @@
+warning: unused variable: `hub_clone`
+  --> src/state.rs:45:17
+   |
+45 | ...       let hub_clone = Arc::new(Hub::ne...
+   |               ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_hub_clone`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `get_status` is never used
+   --> src/services/presence_service.rs:158:12
+    |
+ 43 | impl PresenceService {
+    | -------------------- method in this implementation
+...
+158 |     pub fn get_status(&self, user_id: &st...
+    |            ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `epitalk-backend` (bin "epitalk-backend") generated 2 warnings (run `cargo fix --bin "epitalk-backend" -p epitalk-backend` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.32s
+     Running `target/debug/epitalk-backend`
+[2m2026-03-29T05:36:40.374630Z[0m [32m INFO[0m [2mepitalk_backend[0m[2m:[0m Configuration loaded
+[2m2026-03-29T05:36:40.428167Z[0m [32m INFO[0m [2mepitalk_backend[0m[2m:[0m PostgreSQL connected
+[2m2026-03-29T05:36:40.428193Z[0m [32m INFO[0m [2mepitalk_backend[0m[2m:[0m Connecting to MongoDB...
+[2m2026-03-29T05:36:40.429791Z[0m [32m INFO[0m [2mepitalk_backend[0m[2m:[0m MongoDB connected
+[2m2026-03-29T05:36:40.432770Z[0m [32m INFO[0m [2mepitalk_backend[0m[2m:[0m Server listening on 0.0.0.0:3001
+Error: Address already in use (os error 48)
