@@ -40,7 +40,7 @@ Ce guide couvre le déploiement du backend Discord Clone en production.
 docker build -t discord-clone-backend:latest ./backend
 
 # Ou utiliser l'image du registry
-docker pull ghcr.io/epitechmscpropromo2028/t-jsf-600-par_20/backend:latest
+docker pull ghcr.io/ohbadboy/epitalk/backend:latest
 ```
 
 ### 2. Configuration production
@@ -74,7 +74,7 @@ version: '3.8'
 
 services:
   backend:
-    image: ghcr.io/epitechmscpropromo2028/t-jsf-600-par_20/backend:latest
+    image: ghcr.io/ohbadboy/epitalk/backend:latest
     restart: always
     ports:
       - "3001:3001"
@@ -317,7 +317,7 @@ Pour le scaling horizontal avec WebSocket :
 docker images | grep discord-clone-backend
 
 # 2. Rollback vers la version précédente
-docker pull ghcr.io/epitechmscpropromo2028/t-jsf-600-par_20/backend:v1.0.0
+docker pull ghcr.io/ohbadboy/epitalk/backend:v1.0.0
 docker-compose up -d
 
 # 3. Rollback des migrations si nécessaire
