@@ -23,7 +23,6 @@ docs/
 │   ├── database.md          # Schéma base de données
 │   └── security.md          # Sécurité et authentification
 └── guides/
-    ├── getting-started.md   # Guide de démarrage
     └── deployment.md        # Guide de déploiement
 ```
 
@@ -33,7 +32,7 @@ docs/
 - [📡 API REST](./api/README.md)
 - [🔌 WebSocket Protocol](./websocket/protocol.md)
 - [🏗️ Architecture](./architecture/README.md)
-- [🚀 Getting Started](./guides/getting-started.md)
+- [🚀 Démarrage](../README.md#démarrage-en-local)
 
 ## Stack Technique
 
