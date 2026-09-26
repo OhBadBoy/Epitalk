@@ -1,505 +1,156 @@
-# 🚀 EpiTalk - Plateforme de Communication en Temps Réel
+# EpiTalk
 
-<div align="center">
+Plateforme de messagerie en temps réel inspirée de Discord : serveurs, salons, messages privés, rôles et modération. Backend en Rust (Axum), interface en Next.js, client desktop en Electron.
 
-![EpiTalk](https://img.shields.io/badge/EpiTalk-v1.0.0-blue?style=for-the-badge)
-![Rust](https://img.shields.io/badge/Rust-1.75+-orange?style=for-the-badge&logo=rust)
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
-![WebSocket](https://img.shields.io/badge/WebSocket-Real--Time-green?style=for-the-badge)
+> **Contexte.** Projet d'équipe réalisé par quatre étudiants dans le cadre du cursus Epitech (2026). Ce dépôt est une copie du code du projet : l'historique détaillé de l'équipe n'y figure pas. Ma contribution personnelle est décrite ci-dessous ; le reste relève du travail collectif.
 
-**Une plateforme de chat moderne inspirée de Discord, construite avec Rust et Next.js**
+## Ma contribution
 
-[Fonctionnalités](#-fonctionnalités) • [Installation](#-installation) • [Architecture](#-architecture) • [Documentation](#-documentation)
+- API REST en Rust (Axum) : serveurs, salons, membres et invitations (validation, modèles, routes).
+- Authentification JWT, hachage des mots de passe avec Argon2, middleware de protection des routes et contrôle d'accès par rôles (Owner, Admin, Moderator, Member).
+- Schéma PostgreSQL, migrations SQL et jeu de données de test ; gestion des invitations (nombre d'utilisations, expiration, invitations actives).
+- Intégration côté client du WebSocket et de l'historique MongoDB (chargement de l'historique au changement de salon).
+- Composants React/Next.js : création de serveur et de salon, paramètres utilisateur ; harmonisation de l'interface et des fenêtres modales.
+- Modération : bannissement permanent ou temporaire, interface associée, tests des permissions.
+- Chaîne GitHub Actions (formatage, analyse statique, tests, couverture, images Docker) et son dépannage.
+- Intégration des branches de l'équipe : fusions, résolution de conflits et d'erreurs de compilation.
+- Documentation : API, protocole WebSocket, architecture, schéma relationnel, diagrammes UML.
 
-</div>
+Je ne revendique pas le hub WebSocket côté serveur, le client desktop Electron ni les fonctionnalités développées par les autres membres de l'équipe.
 
----
+## Fonctionnalités présentes dans le code
 
-## 📋 Table des matières
+- **Comptes et sécurité** : inscription, connexion, jetons JWT avec expiration et rafraîchissement, changement de mot de passe et d'e-mail, règles de complexité du mot de passe, profil (avatar, biographie, couleurs de bannière).
+- **Serveurs et salons** : création, modification, suppression, transfert de propriété ; salons par serveur ; invitations avec limite d'utilisation et expiration.
+- **Messagerie en temps réel** : messages instantanés par WebSocket, historique persistant (MongoDB), modification et suppression, messages programmés, messages épinglés, recherche dans un salon, pièces jointes (10 Mo maximum), réactions, GIF via une API externe (Tenor ou Giphy, clé requise), indicateurs de frappe, présence (en ligne, absent, ne pas déranger, hors ligne).
+- **Messages privés** : conversations entre utilisateurs (envoi, modification, suppression).
+- **Rôles et modération** : Owner, Admin, Moderator, Member ; expulsion ; bannissement permanent ou temporaire ; liste des bannissements.
+- **Interface** : français et anglais, notifications, quatre thèmes (light, ash, dim, dark).
+- **Client desktop** : fenêtre Electron qui charge l'interface web, avec notifications système et menu localisé.
 
-- [Vue d'ensemble](#-vue-densemble)
-- [Fonctionnalités](#-fonctionnalités)
-- [Architecture](#-architecture)
-- [Arborescence du projet](#-arborescence-du-projet)
-- [Prérequis](#-prérequis)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Lancement](#-lancement)
-- [Tests](#-tests)
-- [API Documentation](#-api-documentation)
-- [Technologies](#-technologies)
+## Architecture
 
----
-
-## 🎯 Vue d'ensemble
-
-**EpiTalk** est une plateforme de communication en temps réel permettant de :
-- Créer et gérer des serveurs de discussion
-- Organiser des conversations par channels
-- Échanger des messages instantanés via WebSocket
-- Gérer des rôles et permissions (RBAC)
-- Inviter des utilisateurs via des codes d'invitation
-
-### 🏆 Score de conformité : **30/31 points (97%)**
-
----
-
-## ✨ Fonctionnalités
-
-### 🔐 Authentification & Sécurité
-- ✅ Inscription et connexion avec JWT
-- ✅ Hash de mots de passe avec bcrypt
-- ✅ Protection des routes avec middleware d'authentification
-- ✅ Tokens sécurisés avec expiration
-
-### 🖥️ Gestion des Serveurs
-- ✅ Création de serveurs privés
-- ✅ Suppression de serveurs (propriétaire uniquement)
-- ✅ Rejoindre un serveur via code d'invitation
-- ✅ Quitter un serveur
-- ✅ Navigation multi-serveurs simultanée
-
-### 📢 Gestion des Channels
-- ✅ Création de channels textuels
-- ✅ Suppression de channels (admin/propriétaire)
-- ✅ Organisation par serveur
-- ✅ Channel par défaut automatique
-
-### 💬 Messagerie en Temps Réel
-- ✅ Messages instantanés via WebSocket
-- ✅ Historique persistant (MongoDB)
-- ✅ Chargement automatique des 50 derniers messages
-- ✅ Indicateurs de frappe avec nom d'utilisateur
-- ✅ Statut en ligne/hors ligne des utilisateurs
-- ✅ Broadcast en temps réel
-
-### 👥 Gestion des Utilisateurs
-- ✅ Liste des membres du serveur
-- ✅ Affichage du statut en ligne
-- ✅ Système de rôles (Owner, Admin, Moderator, Member)
-- ✅ Permissions différenciées par rôle
-
-### 🎫 Système d'Invitations
-- ✅ Génération de codes d'invitation uniques
-- ✅ Limitation d'utilisation configurable
-- ✅ Expiration automatique
-- ✅ Révocation manuelle
-
-### 💾 Persistance des Données
-- ✅ PostgreSQL pour la structure relationnelle
-- ✅ MongoDB pour l'historique des messages
-- ✅ Migrations automatiques
-- ✅ Backup et restore
-
----
-
-## 🏗️ Architecture
-
-### Stack Technique
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                     FRONTEND (Next.js 16)               │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │   React 19   │  │   Zustand    │  │  TailwindCSS │ │
-│  │  TypeScript  │  │  WebSocket   │  │   shadcn/ui  │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-└─────────────────────────────────────────────────────────┘
-                            ▼
-                     HTTP + WebSocket
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                   BACKEND (Rust/Axum)                   │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │   REST API   │  │  WebSocket   │  │     JWT      │ │
-│  │    Axum      │  │     Hub      │  │   Auth       │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-└─────────────────────────────────────────────────────────┘
-                            ▼
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-    ┌──────────────────┐        ┌──────────────────┐
-    │   PostgreSQL     │        │     MongoDB      │
-    │                  │        │                  │
-    │  • Users         │        │  • Messages      │
-    │  • Servers       │        │  • History       │
-    │  • Channels      │        │  • Timestamps    │
-    │  • Memberships   │        │                  │
-    │  • Invites       │        │                  │
-    └──────────────────┘        └──────────────────┘
+```mermaid
+flowchart LR
+    Desktop["Client desktop<br/>Electron"] -->|"charge l'interface"| Web["Interface web<br/>Next.js, React, TypeScript"]
+    Web -->|"HTTP /api"| Backend["Backend Rust (Axum)<br/>API REST et WebSocket /ws"]
+    Web <-->|"WebSocket /ws"| Backend
+    Backend --> PG[("PostgreSQL<br/>comptes, serveurs, salons,<br/>membres, invitations, bannissements")]
+    Backend --> MG[("MongoDB<br/>messages")]
 ```
 
----
+## Stack technique
 
-## 📁 Arborescence du projet
+| Couche | Technologies |
+|---|---|
+| Backend | Rust (édition 2021), Axum 0.7, Tokio, SQLx 0.8, pilote MongoDB 2.8, jsonwebtoken, argon2, reqwest (API GIF) |
+| Frontend | Next.js 16, React 19, TypeScript 5, Zustand, Tailwind CSS 4, Zod, Radix UI et shadcn/ui, Framer Motion |
+| Bases de données | PostgreSQL 16 et MongoDB 6 (images Docker de `backend/docker-compose.yml`) |
+| Desktop | Electron 32 |
+| Qualité | rustfmt, Clippy, Vitest, GitHub Actions |
 
-```
-T-JSF-600-PAR_20/
-│
-├── 📂 backend/                          # Backend Rust/Axum
-│   ├── 📂 database/
-│   │   ├── migrations/                  # Migrations SQL
-│   │   └── schema.sql                   # Schéma PostgreSQL
-│   │
-│   ├── 📂 src/
-│   │   ├── 📂 auth/                     # Authentification JWT
-│   │   │   ├── jwt.rs                   # Génération/validation tokens
-│   │   │   ├── middleware.rs            # Protection routes
-│   │   │   └── password.rs              # Hashing bcrypt
-│   │   │
-│   │   ├── 📂 models/                   # Modèles de données
-│   │   │   ├── user.rs
-│   │   │   ├── server.rs
-│   │   │   ├── channel.rs
-│   │   │   ├── membership.rs
-│   │   │   └── invite.rs
-│   │   │
-│   │   ├── 📂 repositories/             # Couche d'accès aux données
-│   │   │   ├── user_repository.rs
-│   │   │   ├── server_repository.rs
-│   │   │   ├── channel_repository.rs
-│   │   │   ├── member_repository.rs
-│   │   │   └── invite_repository.rs
-│   │   │
-│   │   ├── 📂 routes/                   # Points d'entrée API REST
-│   │   │   ├── auth.rs                  # /api/auth/*
-│   │   │   ├── servers.rs               # /api/servers/*
-│   │   │   ├── channels.rs              # /api/servers/:id/channels/*
-│   │   │   ├── members.rs               # /api/servers/:id/members/*
-│   │   │   └── invites.rs               # /api/invites/*
-│   │   │
-│   │   ├── 📂 services/                 # Logique métier
-│   │   │   ├── message_service.rs       # Gestion messages MongoDB
-│   │   │   ├── typing_service.rs        # Indicateurs de frappe
-│   │   │   └── presence_service.rs      # Statut en ligne
-│   │   │
-│   │   ├── 📂 ws/                       # WebSocket
-│   │   │   ├── hub.rs                   # Hub de connexions
-│   │   │   ├── connection.rs            # Gestionnaire de connexion
-│   │   │   ├── protocol.rs              # Événements WebSocket
-│   │   │   └── ws_upgrade.rs            # Upgrade HTTP → WS
-│   │   │
-│   │   ├── 📂 tests/                    # Tests (29 tests)
-│   │   │   └── integration_ws/
-│   │   │
-│   │   ├── main.rs                      # Point d'entrée
-│   │   ├── config.rs                    # Configuration
-│   │   └── error.rs                     # Gestion d'erreurs
-│   │
-│   ├── Cargo.toml                       # Dépendances Rust
-│   └── docker-compose.yml               # Services Docker
-│
-├── 📂 frontend/real-time-chat/          # Frontend Next.js 16
-│   ├── 📂 app/                          # App Router Next.js
-│   │   ├── 📂 (auth)/                   # Routes authentification
-│   │   │   ├── login/
-│   │   │   └── register/
-│   │   │
-│   │   ├── 📂 (app)/servers/            # Interface principale
-│   │   │   ├── 📂 components/
-│   │   │   │   ├── servers-rail.tsx     # Barre latérale serveurs
-│   │   │   │   ├── channels-sidebar.tsx # Liste des channels
-│   │   │   │   ├── chat-panel.tsx       # Zone de chat
-│   │   │   │   ├── members-panel.tsx    # Liste des membres
-│   │   │   │   └── user-settings.tsx    # Paramètres utilisateur
-│   │   │   └── page.tsx
-│   │   │
-│   │   └── invite/[code]/               # Rejoindre par invitation
-│   │
-│   ├── 📂 components/ui/                # shadcn/ui components
-│   │
-│   ├── 📂 lib/api/                      # Client API
-│   │   ├── auth.api.ts
-│   │   ├── servers.api.ts
-│   │   ├── channels.api.ts
-│   │   └── invites.api.ts
-│   │
-│   ├── 📂 store/                        # État global (Zustand)
-│   │   ├── auth.store.ts                # Authentification
-│   │   ├── server.store.ts              # Serveurs
-│   │   ├── channel.store.ts             # Channels
-│   │   └── websocket.store.ts           # WebSocket temps réel
-│   │
-│   └── package.json
-│
-└── 📂 docs/                             # Documentation
-    ├── 📂 api/                          # Documentation API
-    ├── 📂 architecture/                 # Architecture
-    └── 📂 websocket/                    # Protocole WebSocket
+## Organisation du dépôt
 
+```text
+backend/                    API Rust : routes, modèles, dépôts, services, WebSocket, migrations SQL
+frontend/real-time-chat/    Interface Next.js (App Router), stores Zustand, clients API et WebSocket
+desktop-app/                Client Electron
+docs/                       API (OpenAPI), architecture, protocole WebSocket, guides, diagrammes UML
+.github/workflows/          CI, publication de l'image Docker, test d'intégration WebSocket
 ```
 
----
+## Démarrage en local
 
-## 🔧 Prérequis
+Prérequis : Docker avec Compose, Node.js 20 ou plus, npm.
 
-### Obligatoire
-- **Rust** 1.75+ ([Installation](https://rustup.rs/))
-- **Node.js** 20+ ([Installation](https://nodejs.org/))
-- **Docker** & **Docker Compose** ([Installation](https://docs.docker.com/get-docker/))
+### 1. Configurer et lancer les bases de données
 
----
-
-## 📦 Installation
-
-### 1. Cloner le projet
-```bash
-git clone <repository-url>
-cd T-JSF-600-PAR_20
-```
-
-### 2. Lancer les bases de données (Docker)
 ```bash
 cd backend
-docker-compose up -d
+cp .env.example .env
+docker compose up -d
 ```
 
-**Vérification :**
+Cette commande démarre PostgreSQL (port 5433) et MongoDB (port 27017).
+
+### 2. Créer le schéma PostgreSQL
+
+`docker-compose.yml` n'applique automatiquement que `001_initial_schema.sql`, qui ne correspond plus au code. Le schéma de référence est `database/schema.sql` ; la table des bannissements est ajoutée par `004_add_bans.sql`.
+
 ```bash
-docker ps
-# Devrait afficher :
-# - epitalk-postgres (port 5433)
-# - epitalk-mongo (port 27017)
+docker compose exec -T postgres psql -U epitalk -d postgres -c "DROP DATABASE epitalk" -c "CREATE DATABASE epitalk"
+docker compose exec -T postgres psql -U epitalk -d epitalk < database/schema.sql
+docker compose exec -T postgres psql -U epitalk -d epitalk < database/migrations/004_add_bans.sql
 ```
 
-### 3. Installer les dépendances backend
+Sous PowerShell, remplacez `< fichier` par `Get-Content fichier | docker compose exec -T postgres psql -U epitalk -d epitalk`.
+
+### 3. Lancer le backend (port 3001)
+
 ```bash
-cd backend
-cargo build
+docker compose --profile backend up -d --build
 ```
 
-### 4. Installer les dépendances frontend
+Sous Windows, les scripts `backend/scripts/*.sh` doivent conserver des fins de ligne LF (`git config core.autocrlf false` avant de cloner) : sinon le conteneur ne démarre pas.
+
+Facultatif : pour la recherche de GIF, renseigner `TENOR_API_KEY` ou `GIPHY_API_KEY` dans `backend/.env`.
+
+### 4. Lancer l'interface (port 8000)
+
 ```bash
-cd frontend/real-time-chat
-npm install
-```
-
----
-
-## ⚙️ Configuration
-
-### Backend (.env)
-
-Créer `backend/.env` :
-```bash
-# PostgreSQL
-DATABASE_URL=postgresql://epitalk:epitalk_password@localhost:5433/epitalk
-
-# MongoDB
-MONGODB_URI=mongodb://epitalk:epitalk_password@localhost:27017/epitalk_messages?authSource=admin
-
-# JWT
-JWT_SECRET=your-super-secret-key-change-in-production
-JWT_EXPIRATION_HOURS=168
-
-# Serveur
-PORT=3001
-```
-
-### Frontend (.env.local)
-
-Créer `frontend/real-time-chat/.env.local` :
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_WS_URL=ws://localhost:3001/ws
-```
-
----
-
-## 🚀 Lancement
-
-### Développement (3 terminaux)
-
-#### Terminal 1 : Bases de données
-```bash
-cd backend
-docker-compose up
-```
-
-#### Terminal 2 : Backend Rust
-```bash
-cd backend
-cargo run
-```
-✅ Attendez : `Server listening on 0.0.0.0:3001`
-
-#### Terminal 3 : Frontend Next.js
-```bash
-cd frontend/real-time-chat
+cd ../frontend/real-time-chat
+printf 'NEXT_PUBLIC_API_URL=http://localhost:3001\nNEXT_PUBLIC_WS_URL=ws://localhost:3001/ws\n' > .env.local
+npm install --legacy-peer-deps
 npm run dev
 ```
-✅ Attendez : `Local: http://localhost:3000`
 
----
+Sous PowerShell, créez `.env.local` avec ces deux lignes. L'option `--legacy-peer-deps` est nécessaire : `@emoji-mart/react` déclare une dépendance de pair sur des versions de React antérieures à la 19. L'interface est ensuite disponible sur <http://localhost:8000>.
 
-## 🌐 Accès
-
-- **Frontend** : http://localhost:3000
-- **Backend API** : http://localhost:3001/api
-- **WebSocket** : ws://localhost:3001/ws
-
----
-
-## 🧪 Tests
-
-### Backend (29 tests)
+### 5. Client desktop (facultatif)
 
 ```bash
-cd backend
-cargo test
+cd ../../desktop-app
+npm install
+EPITALK_WEB_URL=http://localhost:8000 npm start
 ```
 
-**Coverage :**
-- ✅ Services de typing (5 tests)
-- ✅ Services de présence (5 tests)
-- ✅ Protocole WebSocket (13 tests)
+Sous PowerShell : `$env:EPITALK_WEB_URL="http://localhost:8000"; npm start`. Sans `EPITALK_WEB_URL`, le client charge `http://localhost:3000`.
 
----
+## Tests
 
-## 📚 API Documentation
+- Backend : `cd backend && cargo test -- --test-threads=1`, avec PostgreSQL et MongoDB démarrés (variables `DATABASE_URL` et `MONGO_URL`). Les tests couvrent notamment l'authentification, les messages, la présence, les indicateurs de frappe et le bannissement.
+- Interface : `cd frontend/real-time-chat && npm test` (Vitest).
+- Client desktop : `cd desktop-app && npm test` (Vitest).
 
-### Authentification
+Ces tests ne couvrent qu'une partie du code ; aucun taux de couverture n'est garanti.
 
-#### POST `/api/auth/register`
-```json
-{
-  "username": "alice",
-  "email": "alice@example.com",
-  "password": "password123"
-}
-```
+## Intégration continue
 
-#### POST `/api/auth/login`
-```json
-{
-  "email": "alice@example.com",
-  "password": "password123"
-}
-```
+Trois workflows GitHub Actions sont présents dans `.github/workflows/` :
 
-### Serveurs
+- `ci.yml` : formatage (rustfmt), analyse statique (Clippy), compilation, tests avec PostgreSQL et MongoDB, couverture (cargo-llvm-cov, seuil de 70 % configuré) et audit des dépendances (RustSec).
+- `deploy.yml` : construction et publication de l'image Docker du backend sur GitHub Container Registry. Les étapes de déploiement staging et production sont des squelettes, sans commande de déploiement réelle.
+- `ws_test.yml` : test d'intégration WebSocket avec les deux bases de données.
 
-#### GET `/api/servers`
-Liste tous les serveurs de l'utilisateur.
+## Documentation
 
-#### POST `/api/servers`
-```json
-{
-  "name": "Mon Serveur"
-}
-```
+- [API REST](docs/api/README.md) et [spécification OpenAPI](docs/api/openapi.yaml)
+- [Protocole WebSocket](docs/websocket/protocol.md)
+- [Architecture](docs/architecture/README.md)
+- [Diagrammes UML](docs/uml/)
 
-### Invitations
+Certaines pages de `docs/` décrivent un état antérieur du projet (préfixe `/api/v1`, clés JWT RSA, guide de démarrage). Le code et `backend/docker-compose.yml` font foi, et ce README pour l'installation.
 
-#### POST `/api/servers/:server_id/invites`
-```json
-{
-  "max_uses": 10
-}
-```
+## Limites connues
 
-#### POST `/api/invites/:code/join`
-Rejoindre un serveur avec un code.
+- La dernière exécution de la CI sur `main` échoue (formatage rustfmt et audit RustSec) : les tests et la couverture n'y sont pas exécutés.
+- Le déploiement staging et production n'est pas implémenté. L'environnement « staging » affiché par GitHub provient du squelette de workflow.
+- Les migrations ne se rejouent pas telles quelles : trois fichiers portent le numéro `004`. `004_add_profile_fields.sql` échoue sur une base créée avec `001_initial_schema.sql` (la colonne `avatar_url` existe déjà) et `004_add_user_status.sql` crée un statut de type texte, alors que le code attend l'énumération `user_status`. D'où la procédure ci-dessus.
+- Projet pédagogique : ne pas l'exposer tel quel sur Internet. Le fichier `.env.example` et `docker-compose.yml` contiennent des valeurs d'exemple (secret JWT, mot de passe de base de données).
+- Le client desktop charge l'interface web dans une fenêtre native ; aucun installateur n'est fourni.
 
----
+## Licence et crédits
 
-## 🛠️ Technologies
+Backend sous licence MIT (voir `backend/LICENSE`).
 
-### Backend
-- **Rust** 1.75+ - Langage principal
-- **Axum** 0.7 - Framework web
-- **Tokio** 1.36 - Runtime asynchrone
-- **SQLx** 0.7 - PostgreSQL
-- **MongoDB Driver** 2.8
-- **jsonwebtoken** 9.2 - JWT
-
-### Frontend
-- **Next.js** 16.1.6 - Framework React
-- **React** 19 - UI Library
-- **TypeScript** 5.x
-- **Zustand** 5.0 - State management
-- **TailwindCSS** 3.4 - Styling
-- **shadcn/ui** - UI components
-
-### Bases de données
-- **PostgreSQL** 16 - Données structurées
-- **MongoDB** 6.0 - Historique messages
-
----
-
-## 📊 Schéma de base de données
-
-### PostgreSQL
-
-```sql
-users (id, username, email, password_hash, created_at)
-servers (id, name, owner_id, created_at)
-channels (id, server_id, name, created_at)
-memberships (user_id, server_id, role, joined_at)
-invites (id, server_id, code, max_uses, expires_at)
-```
-
-### MongoDB
-
-```javascript
-// Collection : messages
-{
-  channel_id: String,
-  author_id: String,
-  username: String,
-  content: String,
-  created_at: String
-}
-```
-
----
-
-## 🔒 Sécurité
-
-### Authentification
-- ✅ Tokens JWT avec expiration
-- ✅ Hash bcrypt
-- ✅ Middleware de protection
-
-### Autorisations (RBAC)
-| Rôle | Permissions |
-|------|------------|
-| **Owner** | Tout |
-| **Admin** | Créer/supprimer channels, inviter |
-| **Moderator** | Modération messages |
-| **Member** | Lire, écrire |
-
----
-
-## 📝 Commandes utiles
-
-### Backend
-```bash
-cargo build          # Compiler
-cargo run           # Lancer
-cargo test          # Tests
-cargo clippy        # Linter
-```
-
-### Frontend
-```bash
-npm run dev         # Développement
-npm run build       # Build production
-npm run lint        # Linter
-```
-
----
-
-## 📄 Licence
-
-MIT License
-
----
-
-<div align="center">
-
-**Fait avec ❤️ par l'équipe EpiTalk**
-
-[⬆️ Retour en haut](#-epitalk---plateforme-de-communication-en-temps-réel)
-
-</div>
+Fait avec ❤️ par l'équipe EpiTalk.
