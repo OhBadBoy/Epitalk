@@ -1,18 +1,24 @@
+<div align="center">
+
 # EpiTalk
 
-Plateforme de messagerie en temps réel inspirée de Discord : serveurs, salons, messages privés, rôles et modération. Backend en Rust (Axum), interface en Next.js, client desktop en Electron.
+**Messagerie en temps réel inspirée de Discord**
 
-> **Contexte.** Projet d'équipe réalisé par quatre étudiants dans le cadre du cursus Epitech (2026). Ce dépôt est une copie du code du projet : l'historique détaillé de l'équipe n'y figure pas. Ma contribution personnelle est décrite ci-dessous ; le reste relève du travail collectif.
+`Rust` `Axum` `Next.js` `PostgreSQL` `MongoDB` `WebSocket` `Electron`
+
+</div>
+
+> **Contexte.** Projet d'équipe de quatre étudiants (Epitech, 2026). Ce dépôt est une copie du code : l'historique détaillé de l'équipe n'y figure pas. Ma contribution personnelle est décrite ci-dessous ; le reste relève du travail collectif.
 
 ## Ma contribution
 
 - API REST en Rust (Axum) : serveurs, salons, membres et invitations (validation, modèles, routes).
-- Authentification JWT, hachage des mots de passe avec Argon2, middleware de protection des routes et contrôle d'accès par rôles (Owner, Admin, Moderator, Member).
-- Schéma PostgreSQL, migrations SQL et jeu de données de test ; gestion des invitations (nombre d'utilisations, expiration, invitations actives).
+- Authentification JWT, mots de passe hachés avec Argon2, middleware de protection des routes et contrôle d'accès par rôles (Owner, Admin, Moderator, Member).
+- Schéma PostgreSQL, migrations SQL et jeu de données de test ; invitations (usage limité, expiration, invitations actives).
 - Intégration côté client du WebSocket et de l'historique MongoDB (chargement de l'historique au changement de salon).
 - Composants React/Next.js : création de serveur et de salon, paramètres utilisateur ; harmonisation de l'interface et des fenêtres modales.
 - Modération : bannissement permanent ou temporaire, interface associée, tests des permissions.
-- Chaîne GitHub Actions (formatage, analyse statique, tests, couverture, images Docker) et son dépannage.
+- Chaîne GitHub Actions : formatage, analyse statique, tests, images Docker.
 - Intégration des branches de l'équipe : fusions, résolution de conflits et d'erreurs de compilation.
 - Documentation : API, protocole WebSocket, architecture, schéma relationnel, diagrammes UML.
 
@@ -20,13 +26,15 @@ Je ne revendique pas le hub WebSocket côté serveur, le client desktop Electron
 
 ## Fonctionnalités présentes dans le code
 
-- **Comptes et sécurité** : inscription, connexion, jetons JWT avec expiration et rafraîchissement, changement de mot de passe et d'e-mail, règles de complexité du mot de passe, profil (avatar, biographie, couleurs de bannière).
-- **Serveurs et salons** : création, modification, suppression, transfert de propriété ; salons par serveur ; invitations avec limite d'utilisation et expiration.
-- **Messagerie en temps réel** : messages instantanés par WebSocket, historique persistant (MongoDB), modification et suppression, messages programmés, messages épinglés, recherche dans un salon, pièces jointes (10 Mo maximum), réactions, GIF via une API externe (Tenor ou Giphy, clé requise), indicateurs de frappe, présence (en ligne, absent, ne pas déranger, hors ligne).
-- **Messages privés** : conversations entre utilisateurs (envoi, modification, suppression).
-- **Rôles et modération** : Owner, Admin, Moderator, Member ; expulsion ; bannissement permanent ou temporaire ; liste des bannissements.
-- **Interface** : français et anglais, notifications, quatre thèmes (light, ash, dim, dark).
-- **Client desktop** : fenêtre Electron qui charge l'interface web, avec notifications système et menu localisé.
+| Domaine | Fonctionnalités |
+|:--|:--|
+| **Comptes et sécurité** | Inscription, connexion, jetons JWT (expiration, rafraîchissement), changement de mot de passe et d'e-mail, règles de complexité du mot de passe, profil (avatar, biographie, couleurs de bannière) |
+| **Serveurs et salons** | Création, modification, suppression, transfert de propriété · salons par serveur · invitations à usage limité et expirantes |
+| **Messagerie temps réel** | WebSocket, historique persistant (MongoDB), modification et suppression, messages programmés et épinglés, recherche dans un salon, pièces jointes (10 Mo maximum), réactions, GIF (Tenor ou Giphy, clé requise), indicateurs de frappe, présence (en ligne, absent, ne pas déranger, hors ligne) |
+| **Messages privés** | Conversations entre utilisateurs : envoi, modification, suppression |
+| **Rôles et modération** | Owner, Admin, Moderator, Member · expulsion · bannissement permanent ou temporaire · liste des bannissements |
+| **Interface** | Français et anglais · notifications · quatre thèmes (light, ash, dim, dark) |
+| **Client desktop** | Fenêtre Electron qui charge l'interface web, avec notifications système et menu localisé |
 
 ## Architecture
 
@@ -42,12 +50,12 @@ flowchart LR
 ## Stack technique
 
 | Couche | Technologies |
-|---|---|
-| Backend | Rust (édition 2021), Axum 0.7, Tokio, SQLx 0.8, pilote MongoDB 2.8, jsonwebtoken, argon2, reqwest (API GIF) |
-| Frontend | Next.js 16, React 19, TypeScript 5, Zustand, Tailwind CSS 4, Zod, Radix UI et shadcn/ui, Framer Motion |
-| Bases de données | PostgreSQL 16 et MongoDB 6 (images Docker de `backend/docker-compose.yml`) |
-| Desktop | Electron 32 |
-| Qualité | rustfmt, Clippy, Vitest, GitHub Actions |
+|:--|:--|
+| **Backend** | Rust (édition 2021), Axum 0.7, Tokio, SQLx 0.8, pilote MongoDB 2.8, jsonwebtoken, argon2, reqwest (API GIF) |
+| **Frontend** | Next.js 16, React 19, TypeScript 5, Zustand, Tailwind CSS 4, Zod, Radix UI et shadcn/ui, Framer Motion |
+| **Bases de données** | PostgreSQL 16 et MongoDB 6 (images Docker de `backend/docker-compose.yml`) |
+| **Desktop** | Electron 32 |
+| **Qualité** | rustfmt, Clippy, Vitest |
 
 ## Organisation du dépôt
 
@@ -56,10 +64,10 @@ backend/                    API Rust : routes, modèles, dépôts, services, Web
 frontend/real-time-chat/    Interface Next.js (App Router), stores Zustand, clients API et WebSocket
 desktop-app/                Client Electron
 docs/                       API (OpenAPI), architecture, protocole WebSocket, guides, diagrammes UML
-.github/workflows/          CI, publication de l'image Docker, test d'intégration WebSocket
 ```
 
-## Démarrage en local
+<details>
+<summary><b>Démarrage en local</b> : Docker, PostgreSQL, MongoDB, Next.js</summary>
 
 Prérequis : Docker avec Compose, Node.js 20 ou plus, npm.
 
@@ -116,21 +124,15 @@ EPITALK_WEB_URL=http://localhost:8000 npm start
 
 Sous PowerShell : `$env:EPITALK_WEB_URL="http://localhost:8000"; npm start`. Sans `EPITALK_WEB_URL`, le client charge `http://localhost:3000`.
 
+</details>
+
 ## Tests
 
-- Backend : `cd backend && cargo test -- --test-threads=1`, avec PostgreSQL et MongoDB démarrés (variables `DATABASE_URL` et `MONGO_URL`). Les tests couvrent notamment l'authentification, les messages, la présence, les indicateurs de frappe et le bannissement.
-- Interface : `cd frontend/real-time-chat && npm test` (Vitest).
-- Client desktop : `cd desktop-app && npm test` (Vitest).
+- **Backend** : `cd backend && cargo test -- --test-threads=1`, avec PostgreSQL et MongoDB démarrés (variables `DATABASE_URL` et `MONGO_URL`). Les tests couvrent notamment l'authentification, les messages, la présence, les indicateurs de frappe et le bannissement.
+- **Interface** : `cd frontend/real-time-chat && npm test` (Vitest).
+- **Client desktop** : `cd desktop-app && npm test` (Vitest).
 
 Ces tests ne couvrent qu'une partie du code ; aucun taux de couverture n'est garanti.
-
-## Intégration continue
-
-Trois workflows GitHub Actions sont présents dans `.github/workflows/` :
-
-- `ci.yml` : formatage (rustfmt), analyse statique (Clippy), compilation, tests avec PostgreSQL et MongoDB, couverture (cargo-llvm-cov, seuil de 70 % configuré) et audit des dépendances (RustSec).
-- `deploy.yml` : construction et publication de l'image Docker du backend sur GitHub Container Registry. Les étapes de déploiement staging et production sont des squelettes, sans commande de déploiement réelle.
-- `ws_test.yml` : test d'intégration WebSocket avec les deux bases de données.
 
 ## Documentation
 
@@ -139,13 +141,12 @@ Trois workflows GitHub Actions sont présents dans `.github/workflows/` :
 - [Architecture](docs/architecture/README.md)
 - [Diagrammes UML](docs/uml/)
 
-Certaines pages de `docs/` décrivent un état antérieur du projet (préfixe `/api/v1`, clés JWT RSA, guide de démarrage). Le code et `backend/docker-compose.yml` font foi, et ce README pour l'installation.
+Certaines pages de `docs/` décrivent un état antérieur du projet (préfixe `/api/v1`, clés JWT RSA). Le code et `backend/docker-compose.yml` font foi, et ce README pour l'installation.
 
 ## Limites connues
 
-- La CI ne s'exécute plus actuellement sur ce dépôt (les jobs ne démarrent pas). La dernière exécution effective, le 5 mai 2026, échouait au formatage (rustfmt) et à l'audit des dépendances (RustSec) : les tests et la couverture n'ont donc pas été exécutés sur `main`.
-- Le déploiement staging et production n'est pas implémenté. L'environnement « staging » affiché par GitHub provient du squelette de workflow.
 - Les migrations ne se rejouent pas telles quelles : trois fichiers portent le numéro `004`. `004_add_profile_fields.sql` échoue sur une base créée avec `001_initial_schema.sql` (la colonne `avatar_url` existe déjà) et `004_add_user_status.sql` crée un statut de type texte, alors que le code attend l'énumération `user_status`. D'où la procédure ci-dessus.
+- Le déploiement staging et production n'est pas implémenté : l'environnement « staging » affiché par GitHub provient d'un squelette de workflow.
 - Projet pédagogique : ne pas l'exposer tel quel sur Internet. Le fichier `.env.example` et `docker-compose.yml` contiennent des valeurs d'exemple (secret JWT, mot de passe de base de données).
 - Le client desktop charge l'interface web dans une fenêtre native ; aucun installateur n'est fourni.
 
