@@ -143,7 +143,7 @@ Certaines pages de `docs/` décrivent un état antérieur du projet (préfixe `/
 
 ## Limites connues
 
-- La dernière exécution de la CI sur `main` échoue (formatage rustfmt et audit RustSec) : les tests et la couverture n'y sont pas exécutés.
+- La CI ne s'exécute plus actuellement sur ce dépôt (les jobs ne démarrent pas). La dernière exécution effective, le 5 mai 2026, échouait au formatage (rustfmt) et à l'audit des dépendances (RustSec) : les tests et la couverture n'ont donc pas été exécutés sur `main`.
 - Le déploiement staging et production n'est pas implémenté. L'environnement « staging » affiché par GitHub provient du squelette de workflow.
 - Les migrations ne se rejouent pas telles quelles : trois fichiers portent le numéro `004`. `004_add_profile_fields.sql` échoue sur une base créée avec `001_initial_schema.sql` (la colonne `avatar_url` existe déjà) et `004_add_user_status.sql` crée un statut de type texte, alors que le code attend l'énumération `user_status`. D'où la procédure ci-dessus.
 - Projet pédagogique : ne pas l'exposer tel quel sur Internet. Le fichier `.env.example` et `docker-compose.yml` contiennent des valeurs d'exemple (secret JWT, mot de passe de base de données).
