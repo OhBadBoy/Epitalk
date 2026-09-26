@@ -8,7 +8,7 @@
 
 </div>
 
-> **Contexte.** Projet d'équipe de quatre étudiants (Epitech, 2026). Ce dépôt est une copie du code : l'historique détaillé de l'équipe n'y figure pas. Ma contribution personnelle est décrite ci-dessous ; le reste relève du travail collectif.
+> **Contexte.** Projet d'équipe de quatre personnes réalisé pendant ma formation (2026). Ce dépôt est une copie du code : l'historique détaillé de l'équipe n'y figure pas. Ma contribution personnelle est décrite ci-dessous ; le reste relève du travail collectif.
 
 ## Ma contribution
 
