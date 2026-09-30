@@ -10,19 +10,34 @@
 
 > **Contexte.** Projet d'équipe de quatre personnes réalisé pendant ma formation (2026). Ce dépôt est une copie du code : l'historique détaillé de l'équipe n'y figure pas. Ma contribution personnelle est décrite ci-dessous ; le reste relève du travail collectif.
 
-## Ma contribution
+## Équipe et responsabilités
 
-- API REST en Rust (Axum) : serveurs, salons, membres et invitations (validation, modèles, routes).
-- Authentification JWT, mots de passe hachés avec Argon2, middleware de protection des routes et contrôle d'accès par rôles (Owner, Admin, Moderator, Member).
-- Schéma PostgreSQL, migrations SQL et jeu de données de test ; invitations (usage limité, expiration, invitations actives).
-- Intégration côté client du WebSocket et de l'historique MongoDB (chargement de l'historique au changement de salon).
-- Composants React/Next.js : création de serveur et de salon, paramètres utilisateur ; harmonisation de l'interface et des fenêtres modales.
-- Modération : bannissement permanent ou temporaire, interface associée, tests des permissions.
-- Chaîne GitHub Actions : formatage, analyse statique, tests, images Docker.
-- Intégration des branches de l'équipe : fusions, résolution de conflits et d'erreurs de compilation.
-- Documentation : API, protocole WebSocket, architecture, schéma relationnel, diagrammes UML.
+La répartition officielle comprend **14 branches fonctionnelles**. Chaque branche correspond à un ensemble cohérent de fonctionnalités, avec un responsable identifié.
 
-Je ne revendique pas le hub WebSocket côté serveur, le client desktop Electron ni les fonctionnalités développées par les autres membres de l'équipe.
+| Participant | Branches | Responsabilité principale |
+|:--|:--:|:--|
+| **James** | 5 | Authentification, sessions et RBAC ; schéma PostgreSQL et migrations ; API REST serveurs/salons/membres ; CI, couverture et style ; spécifications REST/WS et documentation |
+| **Daouda** | 3 | Repository MongoDB des messages ; hub WebSocket, diffusion, présence et frappe ; fonctionnalités supplémentaires |
+| **Moïse** | 3 | Interface serveurs/salons et socle frontend, dont l'authentification ; interface membres/rôles ; présentation et démonstration |
+| **Hadrian** | 3 | Interface chat et client WebSocket ; tests E2E des achievements ; initialisation des index MongoDB |
+
+Le [référentiel des rôles, des 14 branches et des correspondances UML](docs/REPARTITION_ROLES_BRANCHES_UML.md) détaille les fonctionnalités, les achievements visés et les interfaces de collaboration. Le nommage est `feat/<scope>-<slug>/<owner>`, avec `owner` parmi `hadrian`, `moise`, `daouda`, `james` (sans accents).
+
+Ces noms décrivent le découpage du projet d'origine ; cette copie publique ne republie pas ses 14 branches ni son historique complet. L'attribution d'un lot ne prouve pas à elle seule sa réalisation ou la validation de ses achievements.
+
+## Ma contribution — James
+
+Mon périmètre principal correspond aux cinq branches attribuées à James :
+
+- `feat/backend-auth-rbac/james` : authentification, sessions, API de compte et contrôle d'accès par rôles Owner/Admin/Member ; socle Rust/Axum et middleware.
+- `feat/db-postgres-schema-migrations/james` : schéma PostgreSQL, migrations, relations et contraintes d'intégrité.
+- `feat/backend-servers-channels-members/james` : API REST des serveurs, salons, membres, rôles et invitations ; permissions et repositories PostgreSQL.
+- `feat/ci-coverage-style/james` : chaîne de qualité backend/frontend, lint, tests et objectif de couverture d'au moins 70 %.
+- `feat/docs-api-ws-specs/james` : OpenAPI, protocole WebSocket, architecture PostgreSQL/MongoDB et documentation d'accueil.
+
+J'ai également contribué à l'intégration des branches (fusions, conflits et compilation), au branchement du WebSocket et de l'historique MongoDB dans le client, à des composants et ajustements React/Next.js, ainsi qu'aux évolutions de modération (Moderator, bannissements et tests de permissions). Ces contributions transverses complètent la répartition : le hub WebSocket et le repository MongoDB relèvent de Daouda, le chat temps réel d'Hadrian et le socle de l'interface de Moïse. Le client desktop Electron reste une réalisation collective sans attribution personnelle à James dans ce référentiel.
+
+Les mots de passe du code actuel sont hachés avec Argon2. Le rôle Moderator est une évolution du socle initial Owner/Admin/Member. Le seuil de couverture reste un objectif, sans résultat mesuré attesté ici.
 
 ## Fonctionnalités présentes dans le code
 
@@ -136,10 +151,12 @@ Ces tests ne couvrent qu'une partie du code ; aucun taux de couverture n'est gar
 
 ## Documentation
 
+- [Rôles des participants, 14 branches et correspondances UML](docs/REPARTITION_ROLES_BRANCHES_UML.md)
+- [Index des branches](backend/BRANCHES.md)
 - [API REST](docs/api/README.md) et [spécification OpenAPI](docs/api/openapi.yaml)
 - [Protocole WebSocket](docs/websocket/protocol.md)
 - [Architecture](docs/architecture/README.md)
-- [Diagrammes UML](docs/uml/)
+- [Diagrammes UML et attribution des composants](docs/uml/README.md)
 
 Certaines pages de `docs/` décrivent un état antérieur du projet (préfixe `/api/v1`, clés JWT RSA). Le code et `backend/docker-compose.yml` font foi, et ce README pour l'installation.
 
